@@ -3,12 +3,21 @@ PADDING_CHAR = ' '
 BYTE_DISPLAY_LEN = BYTE_LEN + len(PADDING_CHAR)
 
 
-class PaddingMixin():
-    def __init__(self, split_char:str="", byte_display_maxlen:int=0):
-        try: chunk = self.chunk
-        except AttributeError: chunk = BYTE_LEN
+import os;file = os.path.basename(__file__)
+
+
+class PaddingMixin(object):
+    def __init__(self, split_char:str=""):
+        try:
+            chunk = self.chunk
+            print(f"{file}: self.chunk exists")
+        except AttributeError: 
+            print(f"{file}: self.chunk DNE")
+            chunk = BYTE_LEN
         
+        # print(f"{file}: {type(chunk) = }\n{file}: {chunk = }")
         self.byte_display_maxlen = chunk * BYTE_DISPLAY_LEN
+        # print(f"{file}: {type(self.byte_display_maxlen) = }\n{file}: {self.byte_display_maxlen = }")
         self.split_char = split_char + PADDING_CHAR
         self.split_position = (self.byte_display_maxlen // 2) + 2 * (chunk % 2)
 
