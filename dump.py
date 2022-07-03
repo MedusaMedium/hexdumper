@@ -7,48 +7,97 @@ from utils.inheritance import add_arithmetic_methods
 CHUNK_DEFAULT = 16
 NON_ASCII_REPLACEMENT = "."
 
+BYTE_LEN = (2)
+PADDING_CHAR = ' '
+BYTE_DISPLAY_LEN = BYTE_LEN + len(PADDING_CHAR)
+
+
+import os;file = os.path.basename(__file__)
+
+
 # collections.abc.ByteString
 # padding.PaddingMixin,
  
+# @add_arithmetic_methods(target_methods=dir(bytes))
 @add_arithmetic_methods
-class Dump(bytes, padding.PaddingMixin):
-    # def __new__(obj, source, 
+class Dump(bytes, object):
+    def __new__(obj, source, 
+                chunk:int=CHUNK_DEFAULT, 
+                non_ascii:str=NON_ASCII_REPLACEMENT,
+                split_char:str="",
+                *args, **kwargs):
+        obj.non_ascii = non_ascii
+        obj.split_char = split_char
+        # obj.pad = padding.Padding(chunk, obj.split_char)
+        obj.chunk = chunk
+        return super().__new__(obj, source=source, *args, **kwargs)
+
+
+    # def __init__(self, source,
                 # chunk:int=CHUNK_DEFAULT, 
+                # non_ascii:str=NON_ASCII_REPLACEMENT,
+                # split_char:str="",
+        #         *args, **kwargs):
+        # self.chunk = chunk
+        # self.non_ascii = non_ascii
+        # self.split_char = split_char
+        # self.pad = padding.Padding(self.chunk, self.split_char)
                 # non_ascii:str=NON_ASCII_REPLACEMENT, 
                 # *args, **kwargs):
-        # source:bytes=b"", 
-        # obj.chunk = chunk
-        # obj.source = source
-        # obj.non_ascii = non_ascii
-        # obj = padding.PaddingMixin.__new__(obj, *args, **kwargs)
-        # return bytearray.__new__(obj, source, *args, **kwargs)
-        # return super().__new__(obj, source, *args, **kwargs)
-
-
-    # def __new__(obj, source, 
-    #             non_ascii:str=NON_ASCII_REPLACEMENT, 
-    #             chunk:int=CHUNK_DEFAULT, 
-    #             *args, **kwargs):
-    #     obj.chunk = chunk
-    #     obj.non_ascii = non_ascii
-    #     obj.bytes = source
-        # obj.__radd__ = obj.__add__
-        # self.bytes = bytes()
+        # self.chunk = chunk
+        # self.non_ascii = non_ascii
+        # print(f"{self.non_ascii = }")
         # super().__init__(*args, **kwargs)
-        # return super(Dump, cls).__new__(cls, source)
+    
+
+    @property
+    def chunk(self):
+        return self._chunk
+    @chunk.setter
+    def chunk(self, chunk):
+        print(f"{file}: chunk.setter")
+        self._chunk = chunk
+        print(f"{file}: {self.chunk = }")
+        # if hasattr(self, "pad"):
+        #     print("setting pad attr")
+        # self.pad.chunk = chunk
+        # print(f"{file}: {self.pad.chunk = }")
 
 
-    def __init__(self, source, 
-                non_ascii:str=NON_ASCII_REPLACEMENT, 
-                chunk:int=CHUNK_DEFAULT, 
-                *args, **kwargs):
-        self.chunk = chunk
-        self.non_ascii = non_ascii
-        self.bytes = source
-        super().__init__(*args, **kwargs)
-        # self.bytes = bytes()
-        # padding.PaddingMixin.__init__(*args, **kwargs)
-        # self.source = source
+    @property
+    def byte_display_maxlen(self):
+        return self.chunk * BYTE_DISPLAY_LEN
+
+
+    @property
+    def split_position(self):
+        return (self.byte_display_maxlen // 2) + 2 * (self.chunk % 2)
+
+
+    def _pad_halfway_split(self, string:str)->str:
+        if len(string) > self.split_position:
+            new_string =  string[:self.split_position]
+            new_string += self.split_char
+            new_string += string[self.split_position:]
+            string = new_string
+        return string
+
+
+    def _pad_end(self, string:str)->str:
+        pad_len = (self.byte_display_maxlen + len(self.split_char) - len(string))
+        return string + PADDING_CHAR * pad_len
+    
+    
+    # @property
+    # def split_char(self):
+    #     return self.pad.split_char
+    # @split_char.setter
+    # def split_char(self, char):
+    #     self.pad.split_char = char
+        # self = self.refresh_padding
+        # self.refresh_padding
+        # self.pad = padding.Padding(self.chunk, self.split_char)
+
 
 
     def _hexdump(self, bytestring:bytes)->str:
@@ -71,8 +120,10 @@ class Dump(bytes, padding.PaddingMixin):
             hex_str = padding.PADDING_CHAR.join(hex_list) 
             # insert extra space between groups of 8 hex values
             hex_str = self._pad_halfway_split(hex_str)
+            # hex_str = self.pad._pad_halfway_split(hex_str)
             # pad the end of the hex string for consistency
             hex_str = self._pad_end(hex_str)
+            # hex_str = self.pad._pad_end(hex_str)
 
             # ascii string; chained comparison
             asc_str = "".join([chr(i) if 32 <= i <= 127 else self.non_ascii for i in buffer])
@@ -83,14 +134,6 @@ class Dump(bytes, padding.PaddingMixin):
             index += 1
         
         return '\n'.join(ret_str)
-
-
-    def __mul__(self, multiplicative):
-        return self.__class__(self.bytes * multiplicative)
-
-
-    def __add__(self, additive):
-        return self.__class__(self.bytes + additive)
 
 
     def __repr__(self):
@@ -104,6 +147,7 @@ class Dump(bytes, padding.PaddingMixin):
 '''some other name ideas for this one:
 DoubleDump, PumpDump, 
 '''
+# class DumpEx():
 class DumpEx(Dump):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
