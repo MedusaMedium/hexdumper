@@ -1,36 +1,53 @@
+from collections import abc
+
 from mixins import padding
+from utils.inheritance import add_arithmetic_methods
 
 
 CHUNK_DEFAULT = 16
 NON_ASCII_REPLACEMENT = "."
 
 # collections.abc.ByteString
-# padding.PaddingMixin, 
+# padding.PaddingMixin,
+ 
+@add_arithmetic_methods
 class Dump(bytes, padding.PaddingMixin):
-    def __new__(obj, source, 
-                chunk:int=CHUNK_DEFAULT, 
-                non_ascii:str=NON_ASCII_REPLACEMENT, 
-                *args, **kwargs):
+    # def __new__(obj, source, 
+                # chunk:int=CHUNK_DEFAULT, 
+                # non_ascii:str=NON_ASCII_REPLACEMENT, 
+                # *args, **kwargs):
         # source:bytes=b"", 
-        obj.chunk = chunk
-        obj.source = source
-        obj.non_ascii = non_ascii
+        # obj.chunk = chunk
+        # obj.source = source
+        # obj.non_ascii = non_ascii
         # obj = padding.PaddingMixin.__new__(obj, *args, **kwargs)
         # return bytearray.__new__(obj, source, *args, **kwargs)
-        return super().__new__(obj, source, *args, **kwargs)
+        # return super().__new__(obj, source, *args, **kwargs)
 
 
-    def __init__(self, 
+    # def __new__(obj, source, 
+    #             non_ascii:str=NON_ASCII_REPLACEMENT, 
+    #             chunk:int=CHUNK_DEFAULT, 
+    #             *args, **kwargs):
+    #     obj.chunk = chunk
+    #     obj.non_ascii = non_ascii
+    #     obj.bytes = source
+        # obj.__radd__ = obj.__add__
+        # self.bytes = bytes()
+        # super().__init__(*args, **kwargs)
+        # return super(Dump, cls).__new__(cls, source)
+
+
+    def __init__(self, source, 
                 non_ascii:str=NON_ASCII_REPLACEMENT, 
-                # chunk:int=CHUNK_DEFAULT, 
+                chunk:int=CHUNK_DEFAULT, 
                 *args, **kwargs):
-        # print(f"DUMP: {source = }")
-        # self.chunk = chunk
-        # self.non_ascii = non_ascii
-        print(f"{self.non_ascii = }")
-        # print(f"{super().__init__ = }")
-        # kwargs['source'] = source
+        self.chunk = chunk
+        self.non_ascii = non_ascii
+        self.bytes = source
         super().__init__(*args, **kwargs)
+        # self.bytes = bytes()
+        # padding.PaddingMixin.__init__(*args, **kwargs)
         # self.source = source
 
 
@@ -66,13 +83,14 @@ class Dump(bytes, padding.PaddingMixin):
             index += 1
         
         return '\n'.join(ret_str)
-    
+
+
+    def __mul__(self, multiplicative):
+        return self.__class__(self.bytes * multiplicative)
+
 
     def __add__(self, additive):
-        print(f"{additive = }")
-        print(f"{additive + self = }")
-        src = self + additive
-        return self.__new__(self, source = src)
+        return self.__class__(self.bytes + additive)
 
 
     def __repr__(self):
