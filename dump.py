@@ -5,15 +5,19 @@ NON_ASCII_REPLACEMENT = "."
 
 
 class Dump(bytes, formatting.PaddingMixin):
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args, non_ascii:str=NON_ASCII_REPLACEMENT, **kwargs) -> None:
+        self.non_ascii = non_ascii
         super().__init__(*args, **kwargs)
 
 
-    def _hexdump(self, bytestring:bytes)->str:
+    def _hexdump(self, bytestring:bytes) -> str:
         ret_str = []
         buffer = b""
         done = False
         index = 0
+
+        if self.chunk > len(bytestring):
+            self.chunk = len(bytestring)
 
         while not done:
             if self.chunk < len(bytestring):
@@ -28,10 +32,10 @@ class Dump(bytes, formatting.PaddingMixin):
             # pack bytes together
             hex_str = formatting.PADDING_CHAR.join(hex_list) 
             # insert extra space between groups of 8 hex values
-            hex_str = self._pad_halfway_split(hex_str)
+            hex_str = self.pad_halfway_split(hex_str)
             
             # pad the end of the hex string for consistency
-            hex_str = self._pad_end(hex_str)
+            hex_str = self.pad_end(hex_str)
 
             # ascii string; chained comparison
             asc_str = "".join([chr(i) if 32 <= i <= 127 else self.non_ascii for i in buffer])
@@ -45,13 +49,13 @@ class Dump(bytes, formatting.PaddingMixin):
 
 
     @property
-    def dump(self):
+    def dump(self) -> str:
         return self._hexdump(self)
 
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return super().__repr__()
 
 
-    def __str__(self)->str:
+    def __str__(self) -> str:
         return self.dump

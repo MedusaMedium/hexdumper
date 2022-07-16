@@ -14,7 +14,7 @@ class PaddingMixin():
 
 
     @property
-    def split_char(self):
+    def split_char(self) -> str:
         return self._split_char
     @split_char.setter
     def split_char(self, char):
@@ -22,16 +22,16 @@ class PaddingMixin():
 
 
     @property
-    def byte_display_maxlen(self):
+    def byte_display_maxlen(self) -> int:
         return self.chunk * BYTE_DISPLAY_LEN
 
 
     @property
-    def split_position(self):
+    def split_position(self) -> int:
         return (self.byte_display_maxlen // 2) + 2 * (self.chunk % 2)
 
 
-    def _pad_halfway_split(self, string:str)->str:
+    def pad_halfway_split(self, string:str) -> str:
         if len(string) > self.split_position:
             new_string =  string[:self.split_position]
             new_string += self.split_char
@@ -40,6 +40,6 @@ class PaddingMixin():
         return string
 
 
-    def _pad_end(self, string:str)->str:
+    def pad_end(self, string:str) -> str:
         pad_len = (self.byte_display_maxlen + len(self.split_char) - len(string))
         return string + PADDING_CHAR * pad_len
