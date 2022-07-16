@@ -4,6 +4,7 @@ from utils import formatting, utils
 NON_ASCII_REPLACEMENT = "."
 
 
+@utils.add_arithmetic_methods
 class Dump(bytes, formatting.PaddingMixin):
     def __init__(self, *args, non_ascii:str=NON_ASCII_REPLACEMENT, **kwargs) -> None:
         self.non_ascii = non_ascii

@@ -27,7 +27,8 @@ ITERATOR_METHOD_NAMES = [
 METHOD_NAMES = ARITHMATIC_OPERATOR_NAMES + ITERATOR_METHOD_NAMES
 
 
-def add_arithmetic_methods(cls):#, target_methods=ARITHMATIC_OPERATOR_NAMES):
+# TODO: refactor this
+def add_inherited_methods(cls):#, target_methods=ARITHMATIC_OPERATOR_NAMES):
     # TODO: add list slicing functions to list of operators
     def make_func(func_name):
         @wraps(func_name)
