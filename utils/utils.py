@@ -1,5 +1,8 @@
 '''
 add_arithmetic_methods - https://stackoverflow.com/questions/1388818/how-can-i-compare-two-lists-in-python-and-return-matches
+
+decorator that accepts variable arguments - https://pybit.es/articles/decorator-optional-argument/
+
 '''
 import inspect
 from functools import partial, wraps
