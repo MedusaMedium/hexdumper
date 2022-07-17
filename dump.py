@@ -4,7 +4,7 @@ from utils import formatting, utils
 NON_ASCII_REPLACEMENT = "."
 
 
-@utils.add_arithmetic_methods
+@utils.setParentMethods
 class Dump(bytes, formatting.PaddingMixin):
     def __init__(self, *args, non_ascii:str=NON_ASCII_REPLACEMENT, **kwargs) -> None:
         self.non_ascii = non_ascii
@@ -30,11 +30,13 @@ class Dump(bytes, formatting.PaddingMixin):
 
             # format each byte into a string
             hex_list = [f"{i:02x}" for i in buffer]
+
             # pack bytes together
             hex_str = formatting.PADDING_CHAR.join(hex_list) 
+
             # insert extra space between groups of 8 hex values
             hex_str = self.pad_halfway_split(hex_str)
-            
+
             # pad the end of the hex string for consistency
             hex_str = self.pad_end(hex_str)
 
@@ -45,7 +47,7 @@ class Dump(bytes, formatting.PaddingMixin):
             ret_str.append(f"{index * self.chunk:08x}  {hex_str} |{asc_str}|")
 
             index += 1
-        
+
         return '\n'.join(ret_str)
 
 
