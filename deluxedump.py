@@ -1,3 +1,7 @@
+'''all the bells and whistles
+- rich formatting
+- byte and ascii searching
+'''
 from dump import Dump
 from utils import formatting, utils
 
