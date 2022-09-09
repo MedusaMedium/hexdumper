@@ -1,4 +1,5 @@
-'''all the bells and whistles
+'''WIP - not updated
+all the bells and whistles
 - rich formatting
 - byte and ascii searching
 '''
